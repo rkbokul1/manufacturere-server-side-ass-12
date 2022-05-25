@@ -26,30 +26,43 @@ const run = async () => {
         const toolsCollections = client.db('manufacturer').collection('tools');
         const orderCollections = client.db('manufacturer').collection('order');
         // tools collection
-        app.get('/tools', async(req, res)=>{
+        app.get('/tools', async (req, res) => {
             const query = {};
             const cursor = toolsCollections.find(query);
             const tools = await cursor.toArray();
             res.send(tools)
         });
-        app.get('/tools/:id', async(req, res)=>{
+        app.get('/tools/:id', async (req, res) => {
             const id = req.params.id;
-            const query ={_id: ObjectId(id)}
+            const query = { _id: ObjectId(id) }
             const result = await toolsCollections.findOne(query);
             res.send(result);
         });
-        app.post('/orders', async(req, res)=>{            
+        // order api 
+        app.post('/orders', async (req, res) => {
             const doc = {
                 user: req.body
-              }
-              const result = await orderCollections.insertOne(doc);
-              res.send(result)
+            }
+            const result = await orderCollections.insertOne(doc);
+            res.send(result)
+        });
+        app.get('/orders', async (req, res) => {
+            const query ={}
+            const result = await orderCollections.find(query).toArray();
+            res.send(result)
+        });
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id)
+            const query ={_id:ObjectId(id)}
+            const result = await orderCollections.deleteOne(query);
+            res.send(result)
         });
 
 
 
     }
-    
+
     finally {
 
     }
