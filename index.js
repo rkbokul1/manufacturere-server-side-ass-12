@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 var cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // cors
 app.use(cors());
@@ -24,15 +24,32 @@ const run = async () => {
     try {
         await client.connect();
         const toolsCollections = client.db('manufacturer').collection('tools');
-
+        const orderCollections = client.db('manufacturer').collection('order');
+        // tools collection
         app.get('/tools', async(req, res)=>{
             const query = {};
             const cursor = toolsCollections.find(query);
             const tools = await cursor.toArray();
             res.send(tools)
-        })
+        });
+        app.get('/tools/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query ={_id: ObjectId(id)}
+            const result = await toolsCollections.findOne(query);
+            res.send(result);
+        });
+        app.post('/orders', async(req, res)=>{            
+            const doc = {
+                user: req.body
+              }
+              const result = await orderCollections.insertOne(doc);
+              res.send(result)
+        });
+
+
 
     }
+    
     finally {
 
     }
